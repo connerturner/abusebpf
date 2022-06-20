@@ -9,3 +9,20 @@ generate: clean
 .PHONY: clean
 clean:
 	rm -rf $(SOURCE)/*.o
+
+.PHONY: show-filters
+show-filters:
+	tc filter show dev $(DEVICE)
+
+# teardown existing qdiscs and filters (use in development only)
+teardown:
+	tc filter del dev $(DEVICE) egress
+	tc qdisc del dev $(DEVICE) clsact
+
+# qdisc is needed to attach bpf filter onto and it must take clsact
+.PHONY: load-filter create-qdisc
+create-qdisc:
+	tc qdisc add dev $(DEVICE) clsact 
+
+load-filter: clean generate create-qdisc
+	tc filter add dev $(DEVICE) egress bpf object-file src/egress.bpf.o section out_block_c2 da
