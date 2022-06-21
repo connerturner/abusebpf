@@ -2,9 +2,7 @@
 #include <linux/pkt_cls.h>
 #include <linux/ip.h>
 #include <linux/if_ether.h>
-#include <arpa/inet.h>
 #include <bpf/bpf_helpers.h>
-#include <bpf/bpf_endian.h>
 #include <netinet/in.h>
 
 SEC("out_block_c2") 
