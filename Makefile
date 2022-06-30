@@ -4,7 +4,7 @@ UNAME=$(shell uname -m)
 
 .PHONY: generate
 generate: clean
-	$(CC) -g -O2 -target bpf -c $(SOURCE)/egress.bpf.c -o $(SOURCE)/egress.bpf.o
+	$(CC) -g -O2 -I /usr/include/$(UNAME)-linux-gnu -target bpf -c $(SOURCE)/egress.bpf.c -o $(SOURCE)/egress.bpf.o
 
 .PHONY: clean
 clean:
@@ -25,4 +25,4 @@ create-qdisc:
 	tc qdisc add dev $(DEVICE) clsact 
 
 load-filter: clean generate create-qdisc
-	tc filter add dev $(DEVICE) egress bpf object-file src/egress.bpf.o section out_block_c2 v da
+	tc filter add dev $(DEVICE) egress bpf object-file src/egress.bpf.o section out_block_c2 da
