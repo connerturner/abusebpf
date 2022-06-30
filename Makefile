@@ -4,7 +4,7 @@ UNAME=$(shell uname -m)
 
 .PHONY: generate
 generate: clean
-	$(CC) -I /usr/include/$(UNAME)-linux-gnu -O2 -target bpf -c $(SOURCE)/egress.bpf.c -o $(SOURCE)/egress.bpf.o
+	$(CC) -g -O2 -target bpf -c $(SOURCE)/egress.bpf.c -o $(SOURCE)/egress.bpf.o
 
 .PHONY: clean
 clean:
@@ -16,7 +16,7 @@ show-filters:
 
 # teardown existing qdiscs and filters (use in development only)
 teardown:
-	tc filter del dev $(DEVICE) egress
+	tc filter del dev $(DEVICE)
 	tc qdisc del dev $(DEVICE) clsact
 
 # qdisc is needed to attach bpf filter onto and it must take clsact
@@ -25,4 +25,4 @@ create-qdisc:
 	tc qdisc add dev $(DEVICE) clsact 
 
 load-filter: clean generate create-qdisc
-	tc filter add dev $(DEVICE) egress bpf object-file src/egress.bpf.o section out_block_c2 da
+	tc filter add dev $(DEVICE) egress bpf object-file src/egress.bpf.o section out_block_c2 v da
