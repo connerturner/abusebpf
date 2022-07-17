@@ -26,18 +26,27 @@ int egress(struct __sk_buff *skb) {
     // Start of ip header = [start of packet]+[Ethernet Frame length] since we are looking
     // for an IP packet encapsulated in an ethernet frame.
     packet_ip_header = packet_data + sizeof(*packet_eth_header);
-
+    
     // Discard any non UDP/TCP packets, we don't use them but it has the benefit of
     // ICMP still working for any malware payloads trying to phone home.
-    switch (packet_ip_header->protocol) {
-        case IPPROTO_TCP: case IPPROTO_UDP:
-            //to-do
-            return TC_ACT_SHOT;   
-            break;
-        default: break;
+    if(     packet_ip_header->protocol == IPPROTO_TCP ||
+            packet_ip_header->protocol == IPPROTO_UDP) {
+        char fmt_str[] = "packet from:%0x to:%0x using %s";
+        bpf_trace_printk(fmt_str, sizeof(fmt_str), 
+                packet_ip_header->saddr, 
+                packet_ip_header->daddr, 
+                packet_ip_header->protocol
+        );
+        return TC_ACT_OK;
     }
-    
+
     return TC_ACT_OK;
+
+    //switch (packet_ip_header->protocol) {
+    //    case IPPROTO_TCP: case IPPROTO_UDP:
+    //        return bpf_map;
+    //    default: return TC_ACT_OK;
+    //}
 }
 
 char __license[] SEC("license") = "Dual MIT/GPL";
