@@ -1,5 +1,7 @@
 package abusech
 
+import "encoding/json"
+
 type Entry struct {
 	IpAddress string `json:"ip_address"`
 	Port      uint16
@@ -11,4 +13,15 @@ type Entry struct {
 	FirstSeen string `json:"first_seen"`
 	LastSeen  string `json:"last_seen"`
 	Malware   string
+}
+
+func UnmarshallFeodoJson(jsonBytes []byte) ([]Entry, error) {
+	var entries []Entry
+	err := json.Unmarshal(jsonBytes, &entries)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return entries, nil
 }
