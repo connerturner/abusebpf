@@ -1,6 +1,11 @@
 package abusech
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"time"
+)
 
 type Entry struct {
 	IpAddress string `json:"ip_address"`
@@ -15,10 +20,42 @@ type Entry struct {
 	Malware   string
 }
 
-func UnmarshallFeodoJson(jsonBytes []byte) ([]Entry, error) {
+var httpClient = &http.Client{
+	Timeout: 10 * time.Second,
+}
+
+var feodoBaseUrl = "https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json"
+
+func unmarshallFeodoJson(jsonBytes []byte) ([]Entry, error) {
 	var entries []Entry
 	err := json.Unmarshal(jsonBytes, &entries)
 
+	if err != nil {
+		return nil, err
+	}
+
+	return entries, nil
+}
+
+func RetrieveFeodoEntries() ([]Entry, error) {
+	req, err := http.NewRequest(http.MethodGet, feodoBaseUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, err
+	}
+
+	responseData, err := io.ReadAll(res.Body)
+	entries, err := unmarshallFeodoJson(responseData)
 	if err != nil {
 		return nil, err
 	}

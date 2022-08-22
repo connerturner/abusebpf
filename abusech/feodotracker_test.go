@@ -32,7 +32,7 @@ func TestUnmarhsall(t *testing.T) {
 			"malware": "Dridex"
 		}
 	]`)
-	outcome, err := UnmarshallFeodoJson(testData)
+	outcome, err := unmarshallFeodoJson(testData)
 	fmt.Printf("%+v\n", outcome)
 	if err != nil {
 		t.Errorf("Encountered Error: %s", err)
