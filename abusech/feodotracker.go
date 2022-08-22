@@ -11,7 +11,7 @@ type Entry struct {
 	AsName    string `json:"as_name"`
 	Country   string
 	FirstSeen string `json:"first_seen"`
-	LastSeen  string `json:"last_seen"`
+	LastSeen  string `json:"last_online"`
 	Malware   string
 }
 
