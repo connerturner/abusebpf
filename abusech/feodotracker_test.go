@@ -1,7 +1,6 @@
 package abusech
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -33,7 +32,6 @@ func TestUnmarhsall(t *testing.T) {
 		}
 	]`)
 	outcome, err := unmarshallFeodoJson(testData)
-	fmt.Printf("%+v\n", outcome)
 	if err != nil {
 		t.Errorf("Encountered Error: %s", err)
 	}
