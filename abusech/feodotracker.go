@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"time"
 )
 
 type Entry struct {
@@ -20,12 +19,6 @@ type Entry struct {
 	Malware   string
 }
 
-var httpClient = &http.Client{
-	Timeout: 10 * time.Second,
-}
-
-var feodoBaseUrl = "https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json"
-
 func unmarshallFeodoJson(jsonBytes []byte) ([]Entry, error) {
 	var entries []Entry
 	err := json.Unmarshal(jsonBytes, &entries)
@@ -38,7 +31,7 @@ func unmarshallFeodoJson(jsonBytes []byte) ([]Entry, error) {
 }
 
 func RetrieveFeodoEntries() ([]Entry, error) {
-	req, err := http.NewRequest(http.MethodGet, feodoBaseUrl, nil)
+	req, err := http.NewRequest(http.MethodGet, feodoUrl, nil)
 	if err != nil {
 		return nil, err
 	}
